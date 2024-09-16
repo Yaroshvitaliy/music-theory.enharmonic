@@ -74,55 +74,6 @@ export function getEnharmonicEquivalences(
   return Array.from(enharmonicEquivalences);
 }
 
-// export function generateEnharmonicEquivalences2(
-//   note: Note,
-//   naturalNotes: NaturalNote[] = NATURAL_NOTES,
-//   octaveNotes: Note[] = OCTAVE_NOTES,
-//   maxAccidentals: number = octaveNotes.length
-// ): Note[] {
-//   const baseIndex = octaveNotes.indexOf(note);
-
-//   if (baseIndex === -1) {
-//     throw new Error(`Note "${note}" is not valid.`);
-//   }
-
-//   if (maxAccidentals > octaveNotes.length) {
-//     throw new Error(`maxAccidentals cannot be greater than the length of octaveNotes.`);
-//   }
-
-//   const enharmonicEquivalences: Set<Note> = new Set();
-
-//   for (let i = 1; i <= maxAccidentals; i++) {
-//     const sharpAccidental = SHARP.repeat(i);
-//     const flatAccidental = FLAT.repeat(i);
-
-//     for (const naturalNote of naturalNotes) {
-//       if (naturalNote === note) continue;
-
-//       const noteIndex = octaveNotes.indexOf(naturalNote);
-//       if (noteIndex === -1) continue;
-
-//       // Process sharp accidentals
-//       const sharpNewIndex = (noteIndex + i) % octaveNotes.length;
-//       const sharpNewNote = octaveNotes[sharpNewIndex];
-//       const sharpEquivalentNote = `${naturalNote}${sharpAccidental}` as Note;
-//       if (sharpNewNote === note && sharpEquivalentNote !== note) {
-//         enharmonicEquivalences.add(sharpEquivalentNote);
-//       }
-
-//       // Process flat accidentals
-//       const flatNewIndex = (noteIndex - i + octaveNotes.length) % octaveNotes.length;
-//       const flatNewNote = octaveNotes[flatNewIndex];
-//       const flatEquivalentNote = `${naturalNote}${flatAccidental}` as Note;
-//       if (flatNewNote === note && flatEquivalentNote !== note) {
-//         enharmonicEquivalences.add(flatEquivalentNote);
-//       }
-//     }
-//   }
-
-//   return Array.from(enharmonicEquivalences);
-// }
-
 const findEquivalentNoteIndex = (equivalentNotes: Note[], accidentalsNumber: number, accidental: AccidentalSymbol) =>
   equivalentNotes.findIndex((n) => n.split(accidental).length - 1 === accidentalsNumber);
 
@@ -144,15 +95,16 @@ const getNumberOfShifts = (scale: Note[], enharmonicScale: Note[]) =>
     return sum;
   }, 0);
   
-function getOneFlatEquivalentNote(
+function getOneAccidentalEquivalentOrSameNote(
   note: Note,
+  accidental: AccidentalSymbol = FLAT,
   naturalNotes: NaturalNote[] = NATURAL_NOTES,
   octaveNotes: Note[] = OCTAVE_NOTES,
   maxAccidentals: number = octaveNotes.length
 ): Note {
   let flatEquivalentNote: Note;
 
-  if (note.includes(SHARP)) {
+  if (accidental === FLAT && note.includes(SHARP)) {
     const equivalentNotes = getEnharmonicEquivalences(note, naturalNotes, octaveNotes, maxAccidentals);
     const oneAccidentalNoteIndex = findEquivalentNoteIndex(equivalentNotes, 1, FLAT);
     flatEquivalentNote = oneAccidentalNoteIndex >= 0
@@ -165,8 +117,32 @@ function getOneFlatEquivalentNote(
   return flatEquivalentNote;
 }
 
-function getNextNote() {
+function getShiftedNote(
+  scale: Note[],
+  currentNote: Note,
+  prevNaturalNote: NaturalNote,
+  accidental: AccidentalSymbol,
+  isExceptionalShiftIndex: boolean,
+  naturalNotes: NaturalNote[] = NATURAL_NOTES,
+  octaveNotes: Note[] = OCTAVE_NOTES,
+  maxAccidentals: number = octaveNotes.length,
+) {
+  const equivalentNotes = getEnharmonicEquivalences(currentNote, naturalNotes, octaveNotes, maxAccidentals);
+  
+  if (equivalentNotes.length === 0) {
+    return currentNote;
+  }
 
+  const prevNaturalNoteIndex = naturalNotes.indexOf(prevNaturalNote);
+  const shift = isExceptionalShiftIndex ? (naturalNotes.length - scale.length + 1) : 1;
+  const nextNaturalNote = naturalNotes[(prevNaturalNoteIndex + shift) % naturalNotes.length];
+  // const equivalentNoteIndex = equivalentNotes.findIndex((n) => n.startsWith(nextNaturalNote));
+  let equivalentNoteIndex = equivalentNotes.findIndex((n) => n.startsWith(nextNaturalNote) && n.includes(accidental));
+  if (equivalentNoteIndex < 0) {
+    // equivalentNoteIndex = equivalentNotes.findIndex((n) => n.startsWith(nextNaturalNote));
+  }
+  const nextNote = equivalentNoteIndex >= 0 ? equivalentNotes[equivalentNoteIndex] : currentNote; 
+  return nextNote;
 }
 
 function getEnharmonicEquivalentScale(
@@ -175,52 +151,27 @@ function getEnharmonicEquivalentScale(
   accidental: AccidentalSymbol = FLAT,
   naturalNotes: NaturalNote[] = NATURAL_NOTES,
   octaveNotes: Note[] = OCTAVE_NOTES,
-  maxAccidentals: number = octaveNotes.length
+  maxAccidentals: number = octaveNotes.length,
 ): Note[] {
+
+  const isPentatonic = scale.length === naturalNotes.length - 2;
 
   const enharmonicScale = scale.reduce((resultScale, currentNote, currentIndex) => {
     if (currentIndex === 0) {
-      const oneFlatEquivalentNote = getOneFlatEquivalentNote(currentNote, naturalNotes, octaveNotes, maxAccidentals);
-      resultScale.push(oneFlatEquivalentNote);
-    } else if (scale.length === naturalNotes.length - 2) {
-      // TODO: extract function
-      const equivalentNotes = getEnharmonicEquivalences(currentNote, naturalNotes, octaveNotes, maxAccidentals);
+      const oneFlatEquivalentOrSameNote = getOneAccidentalEquivalentOrSameNote(currentNote, accidental, naturalNotes, octaveNotes, maxAccidentals);
+      resultScale.push(oneFlatEquivalentOrSameNote);
+    } else {
       const currentNaturalNote = getNaturalNote(currentNote, naturalNotes);
       const prevNote = resultScale[resultScale.length - 1];
       const prevNaturalNote = getNaturalNote(prevNote, naturalNotes);
 
-      if (currentNaturalNote === prevNaturalNote) {
-        const prevNaturalNoteIndex = naturalNotes.indexOf(prevNaturalNote);
-        const shift = (exceptionalShiftIndex === currentIndex) ? (naturalNotes.length - scale.length + 1) : 1;
-        const nextNaturalNote = naturalNotes[(prevNaturalNoteIndex + shift) % naturalNotes.length];
-        const equivalentNoteIndex = equivalentNotes.findIndex((en) => en.startsWith(nextNaturalNote));
-
-        if (equivalentNoteIndex >= 0) {
-          resultScale.push(equivalentNotes[equivalentNoteIndex]);
-        } else {
-          resultScale.push(currentNote);
-        }
+      if (isPentatonic && currentNaturalNote !== prevNaturalNote) {
+        const oneFlatEquivalentOrSameNote = getOneAccidentalEquivalentOrSameNote(currentNote, accidental, naturalNotes, octaveNotes, maxAccidentals);
+        resultScale.push(oneFlatEquivalentOrSameNote);
       } else {
-        const oneFlatEquivalentNote = getOneFlatEquivalentNote(currentNote, naturalNotes, octaveNotes, maxAccidentals);
-        resultScale.push(oneFlatEquivalentNote);
-      }
-    } else {
-      const equivalentNotes = getEnharmonicEquivalences(currentNote, naturalNotes, octaveNotes, maxAccidentals);
-      if (equivalentNotes.length > 0) {
-        const prevNote = resultScale[resultScale.length - 1];
-        const prevNaturalNote = getNaturalNote(prevNote, naturalNotes);
-        const prevNaturalNoteIndex = naturalNotes.indexOf(prevNaturalNote);
-        const shift = (exceptionalShiftIndex === currentIndex) ? (naturalNotes.length - scale.length + 1) : 1;
-        const nextNaturalNote = naturalNotes[(prevNaturalNoteIndex + shift) % naturalNotes.length];
-        const equivalentNoteIndex = equivalentNotes.findIndex((en) => en.startsWith(nextNaturalNote));
-
-        if (equivalentNoteIndex >= 0) {
-          resultScale.push(equivalentNotes[equivalentNoteIndex]);
-        } else {
-          resultScale.push(currentNote);
-        }
-      } else {
-        resultScale.push(currentNote);
+        const isExceptionalShiftIndex = exceptionalShiftIndex === currentIndex;
+        const nextNote = getShiftedNote(scale, currentNote, prevNaturalNote, accidental, isExceptionalShiftIndex, naturalNotes, octaveNotes, maxAccidentals);
+        resultScale.push(nextNote);
       }
     }
     return resultScale;

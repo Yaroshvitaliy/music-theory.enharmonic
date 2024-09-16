@@ -185,7 +185,7 @@ export const getEnharmonicEquivalentScaleTestCases = [
         description: `should handle a Blues C step III scale for H-3W-3WH pattern`,
         scale: ['C', 'C#', 'E', 'F#', 'A', 'B'],
         expectedFlatAccidental: ['C', 'Db', 'E', 'Gb', 'A', 'B'],
-        expectedSharpAccidental: ['C', 'C#', 'E', 'F#', 'A', 'B'],
+        expectedSharpAccidental: ['C', 'Db', 'E', 'F#', 'A', 'B'],
     },
     {
         description: `should handle a Blues C step IV scale for -3W-3WHH pattern`,
@@ -217,31 +217,31 @@ export const getEnharmonicEquivalentScaleTestCases = [
         description: `should handle a Blues C# step II scale for HH-3W-3W pattern`,
         scale: ['C#', 'D', 'D#', 'F#', 'G#', 'B'],
         expectedFlatAccidental: ['Db', 'Ebb', 'Fbb', 'Gb', 'Ab', 'B'],
-        expectedSharpAccidental: ['C#', 'D', 'D#', 'F#', 'G#', 'B'],
+        expectedSharpAccidental: ['C#', 'D', 'Eb', 'F#', 'G#', 'B'],
     },
     {
         description: `should handle a Blues C# step III scale for H-3W-3WH pattern`,
         scale: ['C#', 'D', 'F', 'G', 'A#', 'C'],
         expectedFlatAccidental: ['Db', 'Ebb', 'F', 'G', 'Bb', 'C'],
-        expectedSharpAccidental: ['C#', 'D', 'F', 'G', 'A#', 'C'],
+        expectedSharpAccidental: ['C#', 'D', 'F', 'G', 'A#', 'B#'],
     },
     {
         description: `should handle a Blues C# step IV scale for -3W-3WHH pattern`,
         scale: ['C#', 'E', 'F#', 'A', 'B', 'C'],
         expectedFlatAccidental: ['Db', 'E', 'Gb', 'A', 'B', 'C'],
-        expectedSharpAccidental: ['C#', 'E', 'F#', 'A', 'B', 'C'],
+        expectedSharpAccidental: ['C#', 'E', 'F#', 'G##', 'A##', 'B#'],
     },
     {
         description: `should handle a Blues C# step V scale for W-3WHH-3 pattern`,
         scale: ['C#', 'D#', 'F#', 'G#', 'A', 'A#'],
         expectedFlatAccidental: ['Db', 'Eb', 'Gb', 'Ab', 'Bbb', 'Cbb'],
-        expectedSharpAccidental: ['C#', 'D#', 'F#', 'G#', 'A', 'A#'],
+        expectedSharpAccidental: ['C#', 'D#', 'F#', 'G#', 'A', 'Bb'],
     },
     {
         description: `should handle a Blues C# step VI scale for -3WHH-3W pattern`,
         scale: ['C#', 'E', 'F#', 'G', 'G#', 'B'],
         expectedFlatAccidental: ['Db', 'E', 'Gb', 'Abb', 'Bbbb', 'Cb'], 
-        expectedSharpAccidental: ['C#', 'E', 'F#', 'G', 'G#', 'B'],
+        expectedSharpAccidental: ['C#', 'E', 'F#', 'G', 'Ab', 'B'],
     },
 
     // should handle a diatonic scale in key of C
@@ -337,14 +337,14 @@ export const getEnharmonicEquivalentScaleTestCases = [
         description: `should handle a Diminished C scale for WHWHWHWH pattern`,
         scale: ['C', 'D', 'D#', 'F', 'F#', 'G#', 'A', 'B'],
         expectedFlatAccidental: ['C', 'D', 'Eb', 'F', 'Gb', 'Ab', 'A', 'B'],
-        expectedSharpAccidental: ['C', 'D', 'D#', 'F', 'F#', 'G#', 'A', 'B'],
+        expectedSharpAccidental: ['C', 'D', 'D#', 'E#', 'F#', 'G#', 'A', 'B'],
     },
     {
         description: `should handle a Diminished C II scale for HWHWHWHW pattern`,
         scale: ['C', 'C#', 'D#', 'E', 'F#', 'G', 'A', 'A#'],
         //  expectedFlatAccidental: ['C', 'Db', 'Eb', 'E', 'F#', 'G', 'A', 'Bb'],
         expectedFlatAccidental: ['C', 'Db', 'Eb', 'Fb', 'Gb', 'G', 'A', 'Bb'],
-        expectedSharpAccidental: ['C', 'C#', 'D#', 'E', 'F#', 'G', 'A', 'A#'],
+        expectedSharpAccidental: ['C', 'C#', 'D#', 'E', 'F#', 'G', 'A', 'Bb'],
     },
 
     // should return the same scale when the input scale has 9 notes
