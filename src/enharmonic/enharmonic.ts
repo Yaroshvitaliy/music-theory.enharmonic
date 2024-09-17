@@ -1,5 +1,4 @@
-import { AccidentalSymbol } from '../core/generic-types'
-import { Note, NaturalNote, NATURAL_NOTES, OCTAVE_NOTES, SHARP, FLAT } from '../core';
+import { Note, NaturalNote, NATURAL_NOTES, OCTAVE_NOTES, AccidentalSymbol, SHARP, FLAT } from '../core';
 
 function createAccidentalsArray<S extends AccidentalSymbol>(symbol: S, maxAccidentals: number): S[] {
   const accidentals: S[] = [];

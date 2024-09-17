@@ -1,5 +1,5 @@
-import { getNaturalNote, getEnharmonicEquivalences, getEnharmonicEquivalentScales, sortEnharmonicEquivalentScales } from '../src/enharmonic';
-import { NATURAL_NOTES, OCTAVE_NOTES, SHARP, FLAT, Note, NaturalNote } from '../src/core';
+import { getNaturalNote, getEnharmonicEquivalences, EnharmonicScaleBuilder } from '../src/enharmonic';
+import { NATURAL_NOTES, OCTAVE_NOTES, Note, NaturalNote, AccidentalSymbol, FLAT, SHARP } from '../src/core';
 import {
   getNaturalNoteTestCases,
   invalidNotes,
@@ -60,15 +60,24 @@ const getEnharmonicEquivalentScaleFilters = [
   },
 ];
 
+const getBestEnharmonicEquivalentScale = (scale: Note[], accidental: AccidentalSymbol): Note[] =>
+  EnharmonicScaleBuilder.create()
+    .withScale(scale as Note[])
+    .withAccidental(accidental)
+    .withNaturalNotes(NATURAL_NOTES)
+    .withOctaveNotes(OCTAVE_NOTES)
+    .withAccidentalsNumber(4)
+    .withSortOptions(EnharmonicScaleBuilder.DefaultSortOptions)
+    .getBestEnharmonicEquivalentScale();
+
+
 getEnharmonicEquivalentScaleFilters.forEach(({ description: filterDescription, predicate }) => {
   describe(`getEnharmonicEquivalentScale for flat accidental: ${filterDescription}`, () => {
     getEnharmonicEquivalentScaleTestCases
       .filter(predicate)
       .forEach(({ description, scale, expectedFlatAccidental: expected }) => {
         it(`${description}: ${scale}`, () => {
-          const enharmonicsSales = getEnharmonicEquivalentScales(scale as Note[], FLAT, NATURAL_NOTES, OCTAVE_NOTES, 4);
-          const sortedEnharmonicsSales = sortEnharmonicEquivalentScales(scale as Note[], enharmonicsSales, FLAT);
-          const enharmonicsSale = sortedEnharmonicsSales[0];
+          const enharmonicsSale = getBestEnharmonicEquivalentScale(scale as Note[], FLAT);
           expect(enharmonicsSale).toEqual(expected);
         });
       });
@@ -79,9 +88,7 @@ getEnharmonicEquivalentScaleFilters.forEach(({ description: filterDescription, p
       .filter(predicate)
       .forEach(({ description, scale, expectedSharpAccidental: expected }) => {
         it(`${description}: ${scale}`, () => {
-          const enharmonicsSales = getEnharmonicEquivalentScales(scale as Note[], SHARP, NATURAL_NOTES, OCTAVE_NOTES, 4);
-          const sortedEnharmonicsSales = sortEnharmonicEquivalentScales(scale as Note[], enharmonicsSales, SHARP);
-          const enharmonicsSale = sortedEnharmonicsSales[0];
+          const enharmonicsSale = getBestEnharmonicEquivalentScale(scale as Note[], SHARP);
           expect(enharmonicsSale).toEqual(expected);
         });
       });
