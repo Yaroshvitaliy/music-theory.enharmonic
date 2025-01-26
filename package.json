@@ -1,0 +1,38 @@
+{
+  "name": "music-scale-enharmonics",
+  "version": "1.0.0",
+  "main": "dist/bundle.js",
+  "scripts": {
+    "build": "webpack",
+    "test": "jest",
+    "start": "node dist/bundle.js",
+    "start:examples": "ts-node examples/index.ts",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint \"src/**/*.ts\""
+  },
+  "keywords": [
+    "music",
+    "enharmonics",
+    "typescript",
+    "scale"
+  ],
+  "author": "Vitalii Yaroshenko",
+  "license": "MIT",
+  "description": "A library for converting a music scale to its enharmonic equivalent.",
+  "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@types/jest": "^29.5.12",
+    "@typescript-eslint/eslint-plugin": "^8.1.0",
+    "@typescript-eslint/parser": "^8.1.0",
+    "eslint": "^9.9.0",
+    "globals": "^15.9.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.4",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.1.0",
+    "webpack": "^5.93.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
